@@ -4,7 +4,7 @@
 ## Project Overview
 Campus Closet is a peer to peer marketplace for collegiate apparel and memorabilia. The system architecture is designed to provide a high end user experience through a decoupled client server model. The application focuses on performance, secure data handling and real time communication between university students and alumni.
 
-## Technical Stack
+## Tech Stack
 The project is built entirely within the JavaScript and TypeScript ecosystem to ensure end to end type safety.
 
 * Frontend: React.js with TypeScript
