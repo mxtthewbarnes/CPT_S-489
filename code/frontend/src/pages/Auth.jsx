@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { auth } from '../firebase'
 import {
   signInWithEmailAndPassword,
@@ -13,6 +14,7 @@ export default function Auth() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = async () => {
     setError('')
@@ -22,7 +24,7 @@ export default function Auth() {
       } else {
         await createUserWithEmailAndPassword(auth, email, password)
       }
-      // redirect after success
+      navigate('/dashboard')
     } catch (err) {
       setError(err.message)
     }
@@ -32,7 +34,7 @@ export default function Auth() {
     const provider = new GoogleAuthProvider()
     try {
       await signInWithPopup(auth, provider)
-      // redirect after success
+      navigate('/dashboard')
     } catch (err) {
       setError(err.message)
     }
