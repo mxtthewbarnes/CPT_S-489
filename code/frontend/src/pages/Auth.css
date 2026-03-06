@@ -1,0 +1,41 @@
+.auth-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.85);
+  }
+  
+  .auth-box {
+    background: #1a1a1a;
+    padding: 2.5rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    color: white;
+  }
+  
+  .auth-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    font-family: 'Oswald';
+    text-align: center;
+  }
+  
+  .auth-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+  
+  .auth-toggle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #aaa;
+  }
+  
+  .auth-toggle span {
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+  }
