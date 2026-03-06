@@ -1,0 +1,137 @@
+.detail-page {
+    min-height: 100vh;
+    background: #0e0e0e;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+  }
+  
+  .detail-content {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  
+  .back-btn {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 0.9rem;
+    cursor: pointer;
+    margin-bottom: 2rem;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  
+  .back-btn:hover { color: white; }
+  
+  .detail-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  
+  .detail-img {
+    width: 100%;
+    aspect-ratio: 3/4;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .detail-school {
+    color: rgba(255,255,255,0.85);
+    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+  }
+  
+  .detail-school-tag {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #aaa;
+    margin-bottom: 0.5rem;
+  }
+  
+  .detail-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .detail-price {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #e0e0e0;
+  }
+  
+  .detail-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    background: #1a1a1a;
+    border-radius: 6px;
+  }
+  
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #666;
+  }
+  
+  .meta-value {
+    font-size: 0.95rem;
+    color: white;
+  }
+  
+  .detail-description {
+    font-size: 0.95rem;
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  
+  .detail-actions {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .btn-add-cart {
+    flex: 1;
+    padding: 0.85rem;
+    background: white;
+    color: #111;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  
+  .btn-add-cart:hover { background: #e0e0e0; }
+  
+  .btn-like {
+    padding: 0.85rem 1.5rem;
+    background: none;
+    border: 1px solid #444;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  
+  .btn-like:hover { border-color: white; }

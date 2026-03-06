@@ -65,7 +65,7 @@ export default function Shop() {
         {/* Grid */}
         <div className="shop-grid">
           {filtered.map(item => (
-            <div className="item-card" key={item.id}>
+            <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
               <div className="item-img" style={{ background: item.color }}>
                 <span className="item-school">{item.school}</span>
               </div>
