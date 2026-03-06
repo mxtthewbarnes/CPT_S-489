@@ -6,13 +6,17 @@
 .nav-link{
     color: white !important; 
     font-family: 'Oswald';
-    
 }
 
 .nav-link2
 {
     color: white !important; 
     font-family: 'Oswald';
+
+}
+
+nav{
+   margin-top: 20px;
 }
 
 
