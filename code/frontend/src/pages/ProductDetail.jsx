@@ -24,7 +24,7 @@ export default function ProductDetail() {
         <span className="dash-brand" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Campus Closet</span>
         <div className="dash-nav-actions">
           <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
-          <button className="dash-icon-btn">Cart</button>
+          <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
           <button className="dash-icon-btn">Profile</button>
         </div>
       </nav>

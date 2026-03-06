@@ -39,7 +39,7 @@ export default function Shop() {
         <span className="dash-brand" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Campus Closet</span>
         <div className="dash-nav-actions">
           <button className="dash-icon-btn" onClick={() => navigate('/dashboard')}>Home</button>
-          <button className="dash-icon-btn">Cart</button>
+          <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
           <button className="dash-icon-btn">Profile</button>
         </div>
       </nav>

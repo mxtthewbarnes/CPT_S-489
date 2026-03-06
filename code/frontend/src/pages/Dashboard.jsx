@@ -1,14 +1,15 @@
+import { useState } from 'react'
 import './Dashboard.css'
 import { useNavigate } from 'react-router-dom'
 import { auth } from '../firebase'
 import { signOut } from 'firebase/auth'
-
+import CartSidebar from '../pages/Cart'
 
 const yourListings = [
-    { id: 1, school: 'WSU', name: 'Crimson Hoodie', price: '$22', color: '#981e32' },
-    { id: 2, school: 'UW', name: 'Purple Crewneck', price: '$18', color: '#33006F' },
-    { id: 3, school: 'Oregon', name: 'Green Jacket', price: '$35', color: '#154733' },
-  ]
+  { id: 1, school: 'WSU', name: 'Crimson Hoodie', price: '$22', color: '#981e32' },
+  { id: 2, school: 'UW', name: 'Purple Crewneck', price: '$18', color: '#33006F' },
+  { id: 3, school: 'Oregon', name: 'Green Jacket', price: '$35', color: '#154733' },
+]
 
 const likedItems = [
   { id: 1, school: 'WSU', name: 'Vintage Crewneck', price: '$18', color: '#981e32' },
@@ -36,6 +37,7 @@ const discoverItems = [
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const [cartOpen, setCartOpen] = useState(false)
 
   const handleSignOut = async () => {
     await signOut(auth)
@@ -45,27 +47,25 @@ export default function Dashboard() {
   return (
     <div className="dashboard">
 
-
-      {/* Navbar */}
       <nav className="dash-navbar">
         <span className="dash-brand">Campus Closet</span>
         <div className="dash-nav-actions">
-        <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
-          <button className="dash-icon-btn" title="Cart"> Cart</button>
-          <button className="dash-icon-btn" title="Profile"> Profile</button>
+          <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
+          <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
+          <button className="dash-icon-btn">Profile</button>
           <button className="dash-icon-btn signout" onClick={handleSignOut}>Sign Out</button>
         </div>
       </nav>
 
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
+
       <div className="dashboard-content">
 
-      
-        {/* Your Listings */}
         <section className="section">
           <h2 className="section-title">Your Listings</h2>
           <div className="horizontal-scroll">
             {yourListings.map(item => (
-              <div className="item-card" key={item.id}>
+              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
                 <div className="item-img" style={{ background: item.color }}>
                   <span className="item-school">{item.school}</span>
                 </div>
@@ -78,12 +78,11 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Liked Items Row */}
         <section className="section">
           <h2 className="section-title">Liked Items</h2>
           <div className="horizontal-scroll">
             {likedItems.map(item => (
-              <div className="item-card" key={item.id}>
+              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
                 <div className="item-img" style={{ background: item.color }}>
                   <span className="item-school">{item.school}</span>
                 </div>
@@ -96,12 +95,11 @@ export default function Dashboard() {
           </div>
         </section>
 
-        {/* Discover Grid */}
         <section className="section">
           <h2 className="section-title">Discover</h2>
           <div className="discover-grid">
             {discoverItems.map(item => (
-              <div className="item-card" key={item.id}>
+              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
                 <div className="item-img" style={{ background: item.color }}>
                   <span className="item-school">{item.school}</span>
                 </div>
