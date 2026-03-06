@@ -50,7 +50,7 @@ export default function Dashboard() {
       <nav className="dash-navbar">
         <span className="dash-brand">Campus Closet</span>
         <div className="dash-nav-actions">
-          <button className="dash-icon-btn" title="Shop"> Shop</button>
+        <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
           <button className="dash-icon-btn" title="Cart"> Cart</button>
           <button className="dash-icon-btn" title="Profile"> Profile</button>
           <button className="dash-icon-btn signout" onClick={handleSignOut}>Sign Out</button>
