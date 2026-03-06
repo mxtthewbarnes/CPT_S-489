@@ -1,0 +1,28 @@
+.navbar-brand{
+    color: white !important;
+    font-family: 'Oswald';
+}
+
+.nav-link{
+    color: white !important; 
+    font-family: 'Oswald';
+    
+}
+
+.nav-link2
+{
+    color: white !important; 
+    font-family: 'Oswald';
+}
+
+
+/* Custom font for navbar */
+@font-face {
+    font-family: 'Pacifico';
+    src: url('../assets/fonts/pacifico.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'Oswald';
+    src: url('../assets/fonts/oswald.ttf') format('truetype');
+  }
