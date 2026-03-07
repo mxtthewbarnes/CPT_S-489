@@ -4,6 +4,8 @@ import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
 import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
+import SellerDashboard from './pages/SellerDashboard'
+
 
 
 export default function App() {
@@ -15,6 +17,8 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/seller" element={<SellerDashboard />} />
+
       </Routes>
     </BrowserRouter>
   )

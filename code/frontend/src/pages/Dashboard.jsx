@@ -50,6 +50,7 @@ export default function Dashboard() {
       <nav className="dash-navbar">
         <span className="dash-brand">Campus Closet</span>
         <div className="dash-nav-actions">
+        <button className="dash-icon-btn" onClick={() => navigate('/seller')}>Sell</button>
           <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
           <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
           <button className="dash-icon-btn">Profile</button>
