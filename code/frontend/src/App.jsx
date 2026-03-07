@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import Shop from './pages/Shop'
 import ProductDetail from './pages/ProductDetail'
 import SellerDashboard from './pages/SellerDashboard'
+import AdminDashboard from './pages/AdminDashboard'
+
 
 
 
@@ -18,6 +20,8 @@ export default function App() {
         <Route path="/shop" element={<Shop />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/seller" element={<SellerDashboard />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+
 
       </Routes>
     </BrowserRouter>

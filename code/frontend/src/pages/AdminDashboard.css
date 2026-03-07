@@ -1,0 +1,148 @@
+.admin-page {
+    min-height: 100vh;
+    background: #0e0e0e;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+  }
+  
+  .admin-content {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  
+  .admin-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+  }
+  
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .stat-card {
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  
+  .stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0.25rem 0 0;
+  }
+  
+  .section {
+    margin-bottom: 3rem;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  
+  .btn-view-all {
+    background: none;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-view-all:hover { border-color: white; color: white; }
+  
+  .listings-table {
+    background: #1a1a1a;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  
+  .admin-users-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr;
+  }
+  
+  .admin-flags-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr 2fr 1.5fr;
+  }
+  
+  .table-header {
+    padding: 0.75rem 1rem;
+    background: #222;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #aaa;
+  }
+  
+  .table-row {
+    padding: 0.85rem 1rem;
+    border-top: 1px solid #2a2a2a;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+  
+  .table-item-name {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  
+  .badge-active { background: #1a3a1a; color: #4caf50; }
+  .badge-banned { background: #3a1a1a; color: #ff6b6b; }
+  
+  .flag-reason {
+    color: #ffa726;
+    font-size: 0.85rem;
+  }
+  
+  .table-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-btn {
+    background: none;
+    border: 1px solid #444;
+    color: #aaa;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .action-btn:hover { border-color: white; color: white; }
+  .action-delete:hover { border-color: #ff6b6b; color: #ff6b6b; }
