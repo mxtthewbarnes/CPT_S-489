@@ -31,10 +31,11 @@
     font-weight: light;
   }
   
-  .dash-nav-actions {
+.dash-nav-actions {
     display: flex;
     gap: 1rem;
     align-items: center;
+    flex-wrap: wrap;
   }
   
   .dash-icon-btn {
@@ -48,6 +49,17 @@
   }
   
   .dash-icon-btn:hover { color: white; }
+
+  .dash-icon-btn-primary {
+    border: 1px solid #444;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+  }
+
+  .dash-user {
+    color: #8f8f8f;
+    font-size: 0.85rem;
+  }
   
   .dash-icon-btn.signout {
     border: 1px solid #444;
@@ -138,6 +150,16 @@
     font-size: 0.85rem;
     color: #aaa;
     margin: 0.2rem 0 0;
+  }
+
+  .item-meta {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: #737373;
+  }
+
+  .home-hero-panel {
+    margin-bottom: 2rem;
   }
 
 

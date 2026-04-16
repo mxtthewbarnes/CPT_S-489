@@ -39,6 +39,11 @@
     align-items: center;
     justify-content: center;
   }
+
+  .detail-img-photo {
+    display: block;
+    object-fit: cover;
+  }
   
   .detail-school {
     color: rgba(255,255,255,0.85);
@@ -135,3 +140,10 @@
   }
   
   .btn-like:hover { border-color: white; }
+
+  @media (max-width: 900px) {
+    .detail-layout {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }

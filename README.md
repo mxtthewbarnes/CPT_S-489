@@ -1,40 +1,88 @@
-# Campus Closet System Architecture
-# CPTS 489
+# Campus Closet
 
-## Project Overview
-Campus Closet is a peer to peer marketplace for collegiate apparel and memorabilia. The system architecture is designed to provide a high end user experience through a decoupled client server model. The application focuses on performance, secure data handling and real time communication between university students and alumni.
+Campus Closet is a local-first marketplace demo for CPTS 489. It supports three roles:
+
+- `buyer`: browse listings, save liked items, set a university preference, add items to cart, checkout into a persisted order, and review purchase history
+- `seller`: keep buyer privileges, create/edit/draft listings, upload a listing photo, mark items as sold, and review incoming order line items
+- `admin`: review users, suspend or ban accounts with reasons, moderate listings, remove listings with notes, and review platform notifications
 
 ## Tech Stack
-The project is built entirely within the JavaScript and TypeScript ecosystem to ensure end to end type safety.
 
-* Frontend: React.js with TypeScript
-* Styling: Tailwind CSS and Framer Motion
-* Backend: Node.js with Express
-* Database: MongoDB with Mongoose
-* Communication: Socket.io for real time messaging
-* Storage: Cloudinary for high resolution image hosting
+- Frontend: `React + Vite + React Router + Bootstrap + custom CSS`
+- Backend: `Node.js + Express`
+- Database: `SQLite` via `Sequelize`
+- Auth: `JWT` with `bcryptjs`
+- Language: `JavaScript only`
 
-## System Design
-The application utilizes a monolithic backend architecture to manage business logic and data persistence. The React frontend operates as a thick client that manages complex UI states and animations while communicating with the server via a RESTful API.
+## Project Structure
 
-## User Role Management
-The system implements a strict Role Based Access Control (RBAC) model to satisfy project requirements and ensure platform security.
+- `code/frontend`: React application
+- `code/backend`: Express API and Sequelize models
+- `code/database/campus_closet.sqlite`: seeded SQLite database artifact for the submission
 
-* Buyer: Access to search, filtering, wishlist management and peer to peer messaging.
-* Seller: Access to a dedicated dashboard for listing creation, inventory management and sales analytics.
-* Admin: High level access to moderation tools, user management and system health metrics.
+## Local Setup
 
-Role enforcement occurs at the middleware layer on the server. The backend validates the user role stored within the JSON Web Token (JWT) before allowing access to restricted endpoints.
+1. Install dependencies from the repo root:
+   `npm install`
+2. Copy the env template:
+   `cp .env.example .env`
+3. Reset the demo database and seed accounts:
+   `npm run seed`
+4. Start the frontend and backend together:
+   `npm run dev`
+5. Open the frontend:
+   `http://localhost:5173`
 
-## Data Persistence and Flow
-The database schema is optimized for a marketplace environment where listing attributes may vary by category.
+The backend runs on `http://localhost:3001` and the frontend proxies `/api` requests to it during development.
 
-* Users: Stores authentication credentials, university affiliation and role permissions.
-* Listings: Contains product metadata, university tags, price and status. Each listing references a specific Seller ID.
-* Conversations: Manages the relationship between buyers and sellers to facilitate real time communication through persistent message logs.
+## Database Restore
 
-## Real Time Messaging and Notifications
-To facilitate meetups and shipping coordination, the system uses a WebSocket implementation. This allows for low latency communication without constant polling. Messages are persisted in the database to ensure a continuous history for both parties.
+This project uses SQLite, so the database artifact is the file itself:
 
-## UI Standards and Performance
-The frontend is built with a component driven approach to achieve a polished and modern aesthetic. Framer Motion is used for declarative layout transitions and skeleton loaders are implemented to manage perceived latency during data fetching operations. This architecture ensures the shopping experience remains fluid and professional.
+- Included database file: `code/database/campus_closet.sqlite`
+- To restore a clean demo state, run:
+  `npm run seed`
+
+That command recreates the SQLite database file with seeded users, active listings, a draft listing, a removed listing, a starter cart, wishlist items, notifications, and a sample historical order.
+
+## Demo Accounts
+
+- Buyer: `buyer@campuscloset.test` / `password123`
+- Seller: `seller@campuscloset.test` / `password123`
+- Admin: `admin@campuscloset.test` / `password123`
+
+## Available Scripts
+
+- `npm run dev`: start frontend and backend together
+- `npm run dev:frontend`: start only the React app
+- `npm run dev:backend`: start only the Express API
+- `npm run build`: create the production frontend build
+- `npm run seed`: rebuild the SQLite database with demo data
+- `npm run start`: run the backend without the Vite dev server
+
+## API Summary
+
+- Auth: `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`
+- Profile: `PATCH /api/profile`
+- Listings: `GET /api/listings`, `GET /api/listings/:id`
+- Wishlist: `GET /api/wishlist`, `POST /api/wishlist`, `DELETE /api/wishlist/:listingId`
+- Cart: `GET /api/cart`, `POST /api/cart`, `PATCH /api/cart/:itemId`, `DELETE /api/cart/:itemId`
+- Orders: `POST /api/orders/checkout`, `GET /api/orders/:id`, `GET /api/orders/mine`
+- Notifications: `GET /api/notifications`, `PATCH /api/notifications/:id/read`, `PATCH /api/notifications/read-all`
+- Seller: `GET /api/seller/listings`, `POST /api/seller/listings`, `PUT /api/seller/listings/:id`, `PATCH /api/seller/listings/:id/status`, `GET /api/seller/orders`
+- Admin: `GET /api/admin/users`, `PATCH /api/admin/users/:id/status`, `GET /api/admin/listings`, `PATCH /api/admin/listings/:id/status`
+
+## Known Limitations
+
+These are intentional scope choices for the class project and should be called out in the final report:
+
+- Buyer/seller messaging is not implemented.
+- Notifications are stored in-app only; no real email is sent.
+- Photo upload is stored as a base64 data URL on the listing record, not via a cloud image service.
+- Moderation prompts (suspend, ban, remove) use lightweight browser prompts instead of a full modal workflow.
+- Checkout is simulated end-to-end in the database and does not call a real payment processor.
+
+## Notes
+
+- The graded flow is fully local and does not depend on Firebase or other hosted services.
+- If you want a clean submission state before zipping the repo, run `npm run seed` one last time.

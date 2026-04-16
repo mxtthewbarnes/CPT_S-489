@@ -107,6 +107,28 @@
   }
   
   .cart-item-remove:hover { color: white; }
+
+  .cart-quantity {
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-top: 0.5rem;
+  }
+
+  .quantity-btn {
+    width: 28px;
+    height: 28px;
+    border: 1px solid #444;
+    background: transparent;
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
   
   .cart-footer {
     padding: 1.5rem;

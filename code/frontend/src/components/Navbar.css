@@ -1,32 +1,29 @@
-.navbar-brand{
-    color: white !important;
-    font-family: 'Oswald';
+.home-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
 }
 
-.nav-link{
-    color: white !important; 
-    font-family: 'Oswald';
+.home-brand {
+  font-family: 'Oswald';
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
 }
 
-.nav-link2
-{
-    color: white !important; 
-    font-family: 'Oswald';
-
+.home-nav-actions {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
 }
 
-nav{
-   margin-top: 20px;
+.home-link {
+  color: white;
+  opacity: 0.85;
 }
 
-
-/* Custom font for navbar */
-@font-face {
-    font-family: 'Pacifico';
-    src: url('../assets/fonts/pacifico.ttf') format('truetype');
-  }
-
-  @font-face {
-    font-family: 'Oswald';
-    src: url('../assets/fonts/oswald.ttf') format('truetype');
-  }
+.home-link:hover {
+  opacity: 1;
+}

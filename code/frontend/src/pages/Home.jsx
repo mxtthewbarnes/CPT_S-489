@@ -1,56 +1,63 @@
-import { useState } from 'react'
-import './Home.css'
+import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
-import Auth from './Auth'
+import { useAuth } from '../context/useAuth'
+import { homePathForRole } from '../lib/roles'
+import './Home.css'
 
 export default function Home() {
-  const [showAuth, setShowAuth] = useState(false)
+  const navigate = useNavigate()
+  const { user } = useAuth()
+  const primaryPath = user ? homePathForRole(user.role) : '/auth'
 
   return (
-    <div style={{ position: 'relative' }}>
-      <video
-        autoPlay muted loop playsInline
-        style={{
-          position: 'fixed', top: 0, left: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', zIndex: -1,
-        }}
-      >
+    <div className="home-page">
+      <video autoPlay className="home-video" loop muted playsInline>
         <source src="/college3.mp4" type="video/mp4" />
       </video>
 
-      <div style={{
-        position: 'fixed', top: 0, left: 0,
-        width: '100%', height: '100%',
-        background: 'rgba(0, 0, 0, 0.6)', zIndex: -1,
-      }} />
+      <div className="home-overlay" />
 
-      <Navbar onAuthClick={() => setShowAuth(true)} />
+      <Navbar />
 
-      <div style={{
-        position: 'relative', zIndex: 1,
-        display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        height: '100vh', textAlign: 'center', color: 'white',
-      }}>
-        <p style={{ letterSpacing: '0.1em', marginBottom: '1rem' }}>Secondhand college apparel.</p>
-        <h1 style={{ fontSize: '6rem', fontWeight: 'bold', lineHeight: 1 }}>Campus<br/>Closet.</h1>
-        <p style={{ letterSpacing: '0.2em', marginTop: '1rem' }}>BUY, SELL, AND REP YOUR SCHOOL.</p>
-        <button className="btn btn-light mt-4">SHOP NOW</button>
-      </div>
+      <main className="home-hero">
+        <p className="home-tagline">Secondhand college apparel with full buyer, seller, and admin flows.</p>
+        <h1 className="home-title">
+          Campus
+          <br />
+          Closet
+        </h1>
+        <p className="home-subtitle">
+          A local-first React + Express + SQLite marketplace built to be demoable, documentable, and
+          easy to run for CPTS 489.
+        </p>
 
-      {showAuth && (
-        <div style={{
-          position: 'fixed', inset: 0,
-          background: 'rgba(0,0,0,0.8)',
-          zIndex: 100,
-          display: 'flex', alignItems: 'center', justifyContent: 'center'
-        }} onClick={() => setShowAuth(false)}>
-          <div onClick={e => e.stopPropagation()}>
-            <Auth />
+        <div className="home-cta-row">
+          <button className="btn btn-light btn-lg" onClick={() => navigate(primaryPath)} type="button">
+            {user ? 'Open Dashboard' : 'Launch Demo'}
+          </button>
+          <button className="btn btn-outline-light btn-lg" onClick={() => navigate('/auth')} type="button">
+            View Login
+          </button>
+        </div>
+
+        <div className="demo-grid">
+          <div className="demo-card">
+            <p className="demo-label">Buyer</p>
+            <p>buyer@campuscloset.test</p>
+            <p>password123</p>
+          </div>
+          <div className="demo-card">
+            <p className="demo-label">Seller</p>
+            <p>seller@campuscloset.test</p>
+            <p>password123</p>
+          </div>
+          <div className="demo-card">
+            <p className="demo-label">Admin</p>
+            <p>admin@campuscloset.test</p>
+            <p>password123</p>
           </div>
         </div>
-      )}
+      </main>
     </div>
   )
 }

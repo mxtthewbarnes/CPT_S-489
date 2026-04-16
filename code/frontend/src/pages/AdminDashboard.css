@@ -84,10 +84,18 @@
     display: grid;
     grid-template-columns: 1.5fr 2fr 1.5fr 1fr 1fr;
   }
+
+  .admin-users-grid-wide {
+    grid-template-columns: 1.6fr 0.9fr 1fr 0.9fr 1.6fr 1.2fr;
+  }
   
   .admin-flags-grid {
     display: grid;
     grid-template-columns: 2fr 1.5fr 2fr 1.5fr;
+  }
+
+  .admin-flags-grid-wide {
+    grid-template-columns: 1.7fr 1.1fr 0.9fr 1.6fr 1.3fr;
   }
   
   .table-header {
@@ -122,6 +130,10 @@
   
   .badge-active { background: #1a3a1a; color: #4caf50; }
   .badge-banned { background: #3a1a1a; color: #ff6b6b; }
+  .badge-hidden { background: #2d2d2d; color: #e5d685; }
+  .badge-sold { background: #1a1a3a; color: #7986cb; }
+  .badge-suspended { background: #3a2a1a; color: #ffa726; }
+  .badge-removed { background: #2f1d33; color: #f0a7ff; }
   
   .flag-reason {
     color: #ffa726;

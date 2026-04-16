@@ -1,118 +1,215 @@
-import { useState } from 'react'
-import './Dashboard.css'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { auth } from '../firebase'
-import { signOut } from 'firebase/auth'
-import CartSidebar from '../pages/Cart'
-
-const yourListings = [
-  { id: 1, school: 'WSU', name: 'Crimson Hoodie', price: '$22', color: '#981e32' },
-  { id: 2, school: 'UW', name: 'Purple Crewneck', price: '$18', color: '#33006F' },
-  { id: 3, school: 'Oregon', name: 'Green Jacket', price: '$35', color: '#154733' },
-]
-
-const likedItems = [
-  { id: 1, school: 'WSU', name: 'Vintage Crewneck', price: '$18', color: '#981e32' },
-  { id: 2, school: 'UW', name: 'Game Day Hoodie', price: '$24', color: '#33006F' },
-  { id: 3, school: 'Michigan', name: 'Zip-Up Jacket', price: '$30', color: '#00274C' },
-  { id: 4, school: 'Ohio State', name: 'Quarter-Zip', price: '$22', color: '#BB0000' },
-  { id: 5, school: 'UCLA', name: 'Snap-back Cap', price: '$12', color: '#2D68C4' },
-  { id: 6, school: 'Penn State', name: 'Long Sleeve Tee', price: '$15', color: '#1E407C' },
-]
-
-const discoverItems = [
-  { id: 1, school: 'Oregon', name: 'Pullover Hoodie', price: '$28', color: '#154733' },
-  { id: 2, school: 'Arizona', name: 'Varsity Jacket', price: '$45', color: '#AB0520' },
-  { id: 3, school: 'Boise State', name: 'Crewneck', price: '$20', color: '#0033A0' },
-  { id: 4, school: 'Utah', name: 'T-Shirt', price: '$14', color: '#CC0000' },
-  { id: 5, school: 'Colorado', name: 'Fleece Jacket', price: '$35', color: '#CFB87C' },
-  { id: 6, school: 'Stanford', name: 'Cap', price: '$16', color: '#8C1515' },
-  { id: 7, school: 'USC', name: 'Hoodie', price: '$26', color: '#990000' },
-  { id: 8, school: 'Cal', name: 'Long Sleeve', price: '$19', color: '#003262' },
-  { id: 9, school: 'Oregon State', name: 'Crewneck', price: '$22', color: '#DC4405' },
-  { id: 10, school: 'Washington State', name: 'Beanie', price: '$11', color: '#981e32' },
-  { id: 11, school: 'Notre Dame', name: 'Zip-Up', price: '$32', color: '#0C2340' },
-  { id: 12, school: 'Michigan State', name: 'Pullover', price: '$24', color: '#18453B' },
-]
+import CartSidebar from '../components/CartSidebar'
+import DashboardNav from '../components/DashboardNav'
+import ListingCard from '../components/ListingCard'
+import LoadingScreen from '../components/LoadingScreen'
+import { useAuth } from '../context/useAuth'
+import { apiRequest } from '../lib/api'
+import { formatCurrency } from '../lib/listings'
+import './Dashboard.css'
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { token, user } = useAuth()
   const [cartOpen, setCartOpen] = useState(false)
+  const [listings, setListings] = useState([])
+  const [wishlist, setWishlist] = useState([])
+  const [myListings, setMyListings] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const handleSignOut = async () => {
-    await signOut(auth)
-    navigate('/')
+  useEffect(() => {
+    async function loadListings() {
+      try {
+        const [listingData, wishlistData, sellerData] = await Promise.all([
+          apiRequest('/listings', { token }),
+          apiRequest('/wishlist', { token }),
+          user.role === 'seller' ? apiRequest('/seller/listings', { token }) : Promise.resolve({ listings: [] }),
+        ])
+
+        setListings(listingData.listings)
+        setWishlist(wishlistData.listings)
+        setMyListings(sellerData.listings)
+      } catch (requestError) {
+        setError(requestError.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadListings()
+  }, [token, user.role])
+
+  if (loading) {
+    return <LoadingScreen message="Loading your dashboard..." />
+  }
+
+  const personalizedListings = user.university
+    ? listings.filter((listing) => listing.school === user.university).slice(0, 6)
+    : []
+  const discoverListings = [...listings].sort((left, right) => {
+    if (!user.university) {
+      return 0
+    }
+
+    const leftMatches = left.school === user.university ? 1 : 0
+    const rightMatches = right.school === user.university ? 1 : 0
+    return rightMatches - leftMatches
+  })
+  const totalSchools = new Set(listings.map((listing) => listing.school)).size
+  const averagePrice = listings.length
+    ? listings.reduce((sum, listing) => sum + Number(listing.price), 0) / listings.length
+    : 0
+  const navItems = [
+    { label: 'Home', to: '/dashboard' },
+    { label: 'Shop', to: '/shop' },
+    { label: 'Cart', onClick: () => setCartOpen(true) },
+    { label: 'Orders', to: '/orders/history' },
+    { label: 'University', to: '/university' },
+    { label: 'Notifications', to: '/notifications' },
+  ]
+
+  if (user.role === 'seller') {
+    navItems.splice(2, 0, { label: 'Sell', to: '/seller' })
   }
 
   return (
     <div className="dashboard">
-
-      <nav className="dash-navbar">
-        <span className="dash-brand">Campus Closet</span>
-        <div className="dash-nav-actions">
-        <button className="dash-icon-btn" onClick={() => navigate('/seller')}>Sell</button>
-          <button className="dash-icon-btn" onClick={() => navigate('/shop')}>Shop</button>
-          <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
-          <button className="dash-icon-btn">Profile</button>
-          <button className="dash-icon-btn signout" onClick={handleSignOut}>Sign Out</button>
-        </div>
-      </nav>
+      <DashboardNav items={navItems} />
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
       <div className="dashboard-content">
-
-        <section className="section">
-          <h2 className="section-title">Your Listings</h2>
-          <div className="horizontal-scroll">
-            {yourListings.map(item => (
-              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
-                <div className="item-img" style={{ background: item.color }}>
-                  <span className="item-school">{item.school}</span>
-                </div>
-                <div className="item-info">
-                  <p className="item-name">{item.name}</p>
-                  <p className="item-price">{item.price}</p>
-                </div>
-              </div>
-            ))}
+        <section className="panel home-hero-panel">
+          <div className="page-header">
+            <div>
+              <p className="eyebrow">{user.role === 'seller' ? 'Marketplace home' : 'Buyer dashboard'}</p>
+              <h1 className="section-title">Ready for the next campus find?</h1>
+              <p className="muted-copy">
+                {user.university
+                  ? `Default school: ${user.university}`
+                  : 'Choose a university to personalize your marketplace feed.'}
+              </p>
+            </div>
+            <div className="dashboard-actions">
+              <button className="btn-view-all" onClick={() => navigate('/university')} type="button">
+                {user.university ? 'Change University' : 'Select University'}
+              </button>
+              <button className="btn-new" onClick={() => navigate('/shop')} type="button">
+                Browse Listings
+              </button>
+            </div>
           </div>
+
+          <div className="metric-grid compact-grid">
+            <div className="metric-card">
+              <p className="stat-value">{listings.length}</p>
+              <p className="stat-label">Active Listings</p>
+            </div>
+            <div className="metric-card">
+              <p className="stat-value">{wishlist.length}</p>
+              <p className="stat-label">Liked Items</p>
+            </div>
+            <div className="metric-card">
+              <p className="stat-value">{formatCurrency(averagePrice)}</p>
+              <p className="stat-label">Average Price</p>
+            </div>
+            <div className="metric-card">
+              <p className="stat-value">{totalSchools}</p>
+              <p className="stat-label">Schools</p>
+            </div>
+          </div>
+
+          {error && <p className="inline-error">{error}</p>}
         </section>
 
         <section className="section">
-          <h2 className="section-title">Liked Items</h2>
-          <div className="horizontal-scroll">
-            {likedItems.map(item => (
-              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
-                <div className="item-img" style={{ background: item.color }}>
-                  <span className="item-school">{item.school}</span>
-                </div>
-                <div className="item-info">
-                  <p className="item-name">{item.name}</p>
-                  <p className="item-price">{item.price}</p>
-                </div>
-              </div>
-            ))}
+          <div className="section-header">
+            <h2 className="section-title">Your Listings</h2>
+            {user.role === 'seller' && (
+              <button className="btn-view-all" onClick={() => navigate('/seller')} type="button">
+                Manage Inventory
+              </button>
+            )}
           </div>
+
+          {!!myListings.length && (
+            <div className="horizontal-scroll">
+              {myListings.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing}
+                  onClick={() =>
+                    navigate(
+                      listing.status === 'draft' || listing.status === 'hidden'
+                        ? `/seller/listings/${listing.id}/edit`
+                        : `/product/${listing.id}`,
+                    )
+                  }
+                />
+              ))}
+            </div>
+          )}
+
+          {!myListings.length && (
+            <div className="empty-state">
+              <p>
+                {user.role === 'seller'
+                  ? 'Your listings will appear here as soon as you start posting.'
+                  : 'Seller accounts will see their own listings here.'}
+              </p>
+            </div>
+          )}
         </section>
 
         <section className="section">
-          <h2 className="section-title">Discover</h2>
+          <div className="section-header">
+            <h2 className="section-title">Liked Items</h2>
+            <button className="btn-view-all" onClick={() => navigate('/shop')} type="button">
+              Explore More
+            </button>
+          </div>
+
+          {!!wishlist.length && (
+            <div className="horizontal-scroll">
+              {wishlist.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} onClick={() => navigate(`/product/${listing.id}`)} />
+              ))}
+            </div>
+          )}
+
+          {!wishlist.length && (
+            <div className="empty-state">
+              <p>Tap Like on a product page to save it here.</p>
+            </div>
+          )}
+        </section>
+
+        <section className="section">
+          <div className="section-header">
+            <h2 className="section-title">Discover</h2>
+            {user.university && !!personalizedListings.length && (
+              <p className="muted-copy">Showing {user.university} items first.</p>
+            )}
+          </div>
+
           <div className="discover-grid">
-            {discoverItems.map(item => (
-              <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
-                <div className="item-img" style={{ background: item.color }}>
-                  <span className="item-school">{item.school}</span>
-                </div>
-                <div className="item-info">
-                  <p className="item-name">{item.name}</p>
-                  <p className="item-price">{item.price}</p>
-                </div>
-              </div>
+            {discoverListings.map((listing) => (
+              <ListingCard
+                key={listing.id}
+                listing={listing}
+                onClick={() => navigate(`/product/${listing.id}`)}
+              />
             ))}
           </div>
-        </section>
 
+          {!discoverListings.length && (
+            <div className="empty-state">
+              <p>No active listings yet. Check back soon or sign in as a seller to post one.</p>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   )
