@@ -1,60 +1,96 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CartSidebar from '../components/CartSidebar'
+import DashboardNav from '../components/DashboardNav'
+import ListingCard from '../components/ListingCard'
+import LoadingScreen from '../components/LoadingScreen'
+import { useAuth } from '../context/useAuth'
+import { apiRequest } from '../lib/api'
 import './Shop.css'
 
-const allItems = [
-  { id: 1, school: 'WSU', name: 'Vintage Crewneck', price: 18, color: '#981e32' },
-  { id: 2, school: 'UW', name: 'Game Day Hoodie', price: 24, color: '#33006F' },
-  { id: 3, school: 'Michigan', name: 'Zip-Up Jacket', price: 30, color: '#00274C' },
-  { id: 4, school: 'Ohio State', name: 'Quarter-Zip', price: 22, color: '#BB0000' },
-  { id: 5, school: 'UCLA', name: 'Snap-back Cap', price: 12, color: '#2D68C4' },
-  { id: 6, school: 'Penn State', name: 'Long Sleeve Tee', price: 15, color: '#1E407C' },
-  { id: 7, school: 'Oregon', name: 'Pullover Hoodie', price: 28, color: '#154733' },
-  { id: 8, school: 'Arizona', name: 'Varsity Jacket', price: 45, color: '#AB0520' },
-  { id: 9, school: 'Boise State', name: 'Crewneck', price: 20, color: '#0033A0' },
-  { id: 10, school: 'Utah', name: 'T-Shirt', price: 14, color: '#CC0000' },
-  { id: 11, school: 'Colorado', name: 'Fleece Jacket', price: 35, color: '#CFB87C' },
-  { id: 12, school: 'Stanford', name: 'Cap', price: 16, color: '#8C1515' },
-  { id: 13, school: 'USC', name: 'Hoodie', price: 26, color: '#990000' },
-  { id: 14, school: 'Cal', name: 'Long Sleeve', price: 19, color: '#003262' },
-  { id: 15, school: 'Oregon State', name: 'Crewneck', price: 22, color: '#DC4405' },
-  { id: 16, school: 'Notre Dame', name: 'Zip-Up', price: 32, color: '#0C2340' },
-]
-
-const schools = ['All', ...new Set(allItems.map(i => i.school))]
-
 export default function Shop() {
-  const [selectedSchool, setSelectedSchool] = useState('All')
   const navigate = useNavigate()
+  const { token, user } = useAuth()
+  const [selectedSchool, setSelectedSchool] = useState('All')
+  const [search, setSearch] = useState('')
+  const [cartOpen, setCartOpen] = useState(false)
+  const [listings, setListings] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const filtered = selectedSchool === 'All'
-    ? allItems
-    : allItems.filter(i => i.school === selectedSchool)
+  useEffect(() => {
+    async function loadListings() {
+      try {
+        const data = await apiRequest('/listings', { token })
+        setListings(data.listings)
+      } catch (requestError) {
+        setError(requestError.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadListings()
+  }, [token])
+
+  useEffect(() => {
+    if (user?.university) {
+      setSelectedSchool(user.university)
+    }
+  }, [user?.university])
+
+  if (loading) {
+    return <LoadingScreen message="Loading the marketplace..." />
+  }
+
+  const schools = ['All', ...new Set(listings.map((listing) => listing.school))]
+  const filtered = listings.filter((listing) => {
+    const schoolMatches = selectedSchool === 'All' || listing.school === selectedSchool
+    const searchMatches =
+      !search.trim() ||
+      `${listing.title} ${listing.school} ${listing.size} ${listing.condition}`
+        .toLowerCase()
+        .includes(search.trim().toLowerCase())
+
+    return schoolMatches && searchMatches
+  })
+
+  const navItems = [
+    { label: 'Home', to: '/dashboard' },
+    { label: 'Shop', to: '/shop' },
+    { label: 'Cart', onClick: () => setCartOpen(true) },
+    { label: 'Orders', to: '/orders/history' },
+    { label: 'University', to: '/university' },
+    { label: 'Notifications', to: '/notifications' },
+  ]
+
+  if (user.role === 'seller') {
+    navItems.splice(2, 0, { label: 'Sell', to: '/seller' })
+  }
 
   return (
     <div className="shop-page">
+      <DashboardNav items={navItems} />
 
-      {/* Navbar */}
-      <nav className="dash-navbar">
-        <span className="dash-brand" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>Campus Closet</span>
-        <div className="dash-nav-actions">
-          <button className="dash-icon-btn" onClick={() => navigate('/dashboard')}>Home</button>
-          <button className="dash-icon-btn" onClick={() => setCartOpen(true)}>Cart</button>
-          <button className="dash-icon-btn">Profile</button>
-        </div>
-      </nav>
+      <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
 
       <div className="shop-content">
-
-        {/* Filter Bar */}
         <div className="filter-bar">
-          <span className="filter-label">Filter by School:</span>
+          <input
+            className="shop-search"
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by title, school, size, or condition..."
+            type="text"
+            value={search}
+          />
+
           <div className="filter-chips">
-            {schools.map(school => (
+            {schools.map((school) => (
               <button
-                key={school}
                 className={`chip ${selectedSchool === school ? 'chip-active' : ''}`}
+                key={school}
                 onClick={() => setSelectedSchool(school)}
+                type="button"
               >
                 {school}
               </button>
@@ -62,21 +98,23 @@ export default function Shop() {
           </div>
         </div>
 
-        {/* Grid */}
+        {error && <p className="inline-error">{error}</p>}
+
         <div className="shop-grid">
-          {filtered.map(item => (
-            <div className="item-card" key={item.id} onClick={() => navigate(`/product/${item.id}`)}>
-              <div className="item-img" style={{ background: item.color }}>
-                <span className="item-school">{item.school}</span>
-              </div>
-              <div className="item-info">
-                <p className="item-name">{item.name}</p>
-                <p className="item-price">${item.price}</p>
-              </div>
-            </div>
+          {filtered.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              onClick={() => navigate(`/product/${listing.id}`)}
+            />
           ))}
         </div>
 
+        {!filtered.length && (
+          <div className="empty-state">
+            <p>No listings matched that filter.</p>
+          </div>
+        )}
       </div>
     </div>
   )

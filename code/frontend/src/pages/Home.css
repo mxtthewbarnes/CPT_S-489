@@ -1,3 +1,98 @@
-body {
-    overflow: hidden;
+.home-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: white;
+}
+
+.home-video,
+.home-overlay {
+  position: fixed;
+  inset: 0;
+}
+
+.home-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-overlay {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(152, 30, 50, 0.42), transparent 32%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.68), rgba(0, 0, 0, 0.82));
+}
+
+.home-hero {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  padding: 10vh 2rem 4rem;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-tagline {
+  margin: 0 0 1rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.8rem;
+}
+
+.home-title {
+  margin: 0;
+  font-family: 'Oswald';
+  font-size: clamp(4rem, 11vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.home-subtitle {
+  max-width: 740px;
+  margin: 1.25rem auto 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.home-cta-row {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.demo-card {
+  background: rgba(15, 15, 15, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  padding: 1.1rem;
+  backdrop-filter: blur(8px);
+}
+
+.demo-card p {
+  margin: 0.2rem 0;
+}
+
+.demo-label {
+  font-family: 'Oswald';
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff5f6;
+}
+
+@media (max-width: 900px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
   }
+}

@@ -132,8 +132,15 @@
   }
   
   .badge-active { background: #1a3a1a; color: #4caf50; }
+  .badge-hidden { background: #2d2d2d; color: #e5d685; }
   .badge-sold { background: #1a1a3a; color: #7986cb; }
+  .badge-draft { background: #1d2538; color: #87a8ff; }
+  .badge-removed { background: #2f1d33; color: #f0a7ff; }
   .badge-pending { background: #3a2a1a; color: #ffa726; }
+
+  .seller-orders-grid {
+    grid-template-columns: 1.2fr 1.6fr 1.6fr 0.8fr 1fr;
+  }
   
   .table-actions {
     display: flex;
