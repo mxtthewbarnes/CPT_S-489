@@ -20,15 +20,14 @@ export default function Home() {
       <Navbar />
 
       <main className="home-hero">
-        <p className="home-tagline">Secondhand college apparel with full buyer, seller, and admin flows.</p>
+        <p className="home-tagline">Reclaimed college gear for loyal fans.</p>
         <h1 className="home-title">
           Campus
           <br />
           Closet
         </h1>
         <p className="home-subtitle">
-          A local-first React + Express + SQLite marketplace built to be demoable, documentable, and
-          easy to run for CPTS 489.
+          A React + Express + SQLite marketplace
         </p>
 
         <div className="home-cta-row">

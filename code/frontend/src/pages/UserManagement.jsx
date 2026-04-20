@@ -14,6 +14,7 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [actionDraft, setActionDraft] = useState(null)
 
   useEffect(() => {
     async function loadUsers() {
@@ -42,8 +43,10 @@ export default function UserManagement() {
       })
 
       setUsers((current) => current.map((user) => (user.id === userId ? data.user : user)))
+      return data.user
     } catch (requestError) {
       setError(requestError.message)
+      return null
     } finally {
       setBusyId(null)
     }
@@ -66,38 +69,87 @@ export default function UserManagement() {
   })
 
   async function suspendUser(user) {
-    const reason = window.prompt(`Reason for suspending ${user.email}?`)
-
-    if (!reason) {
-      return
-    }
-
-    const durationDays = Number(window.prompt('Suspend for how many days? Enter 1, 7, or 30.', '7'))
-
-    if (![1, 7, 30].includes(durationDays)) {
-      setError('Suspensions must be 1, 7, or 30 days.')
-      return
-    }
-
-    const note = window.prompt('Optional admin note:', user.statusNote || '') || ''
-    await changeStatus(user.id, { status: 'suspended', reason, note, durationDays })
+    setError('')
+    setActionDraft({
+      id: user.id,
+      email: user.email,
+      status: 'suspended',
+      reason: '',
+      note: user.statusNote || '',
+      durationDays: '7',
+    })
   }
 
   async function banUser(user) {
-    const reason = window.prompt(`Reason for banning ${user.email}?`)
-
-    if (!reason) {
-      return
-    }
-
-    const note = window.prompt('Optional admin note:', user.statusNote || '') || ''
-    await changeStatus(user.id, { status: 'banned', reason, note })
+    setError('')
+    setActionDraft({
+      id: user.id,
+      email: user.email,
+      status: 'banned',
+      reason: '',
+      note: user.statusNote || '',
+      durationDays: '7',
+    })
   }
 
   async function restoreUser(user) {
     const note = window.prompt(`Optional note for restoring ${user.email}:`, '') || ''
     await changeStatus(user.id, { status: 'active', note })
   }
+
+  function updateActionDraft(event) {
+    const { name, value } = event.target
+
+    setActionDraft((current) => ({
+      ...current,
+      [name]: value,
+    }))
+  }
+
+  function cancelActionDraft() {
+    setActionDraft(null)
+    setError('')
+  }
+
+  async function submitAction(event) {
+    event.preventDefault()
+
+    const reason = actionDraft?.reason.trim() || ''
+
+    if (!reason || !actionDraft) {
+      setError(`${actionDraft?.status === 'suspended' ? 'Suspension' : 'Ban'} reason is required.`)
+      return
+    }
+
+    const payload = {
+      status: actionDraft.status,
+      reason,
+      note: actionDraft.note.trim(),
+    }
+
+    if (actionDraft.status === 'suspended') {
+      const durationDays = Number(actionDraft.durationDays)
+
+      if (![1, 7, 30].includes(durationDays)) {
+        setError('Suspensions must be 1, 7, or 30 days.')
+        return
+      }
+
+      payload.durationDays = durationDays
+    }
+
+    const updatedUser = await changeStatus(actionDraft.id, payload)
+
+    if (updatedUser) {
+      setActionDraft(null)
+    }
+  }
+
+  const isSuspendDraft = actionDraft?.status === 'suspended'
+  const actionLabel = isSuspendDraft ? 'Suspend' : 'Ban'
+  const actionDescription = isSuspendDraft
+    ? 'Add the required reason shown to the user, choose the suspension length, and include any optional internal note.'
+    : 'Add the required reason shown to the user, plus an optional internal note for admin records.'
 
   return (
     <div className="admin-page">
@@ -123,6 +175,84 @@ export default function UserManagement() {
         </div>
 
         {error && <p className="inline-error">{error}</p>}
+
+        {actionDraft && (
+          <section
+            className={`panel form-card admin-action-panel ${
+              isSuspendDraft ? 'admin-action-panel-suspended' : 'admin-action-panel-banned'
+            }`}
+          >
+            <div className="page-header admin-action-header">
+              <div>
+                <p className="eyebrow">Account Action</p>
+                <h2 className="section-title">
+                  {actionLabel} {actionDraft.email}
+                </h2>
+                <p className="muted-copy">{actionDescription}</p>
+              </div>
+
+              <button className="btn-view-all" onClick={cancelActionDraft} type="button">
+                Cancel
+              </button>
+            </div>
+
+            <form onSubmit={submitAction}>
+              <div className="form-grid admin-action-grid">
+                <label className="field-label">
+                  Reason for {isSuspendDraft ? 'suspension' : 'ban'}
+                  <textarea
+                    className="field-input field-textarea admin-action-reason"
+                    name="reason"
+                    onChange={updateActionDraft}
+                    placeholder={
+                      isSuspendDraft
+                        ? 'Explain why this account is being suspended.'
+                        : 'Explain why this account is being banned.'
+                    }
+                    required
+                    value={actionDraft.reason}
+                  />
+                </label>
+
+                <label className="field-label">
+                  Admin note
+                  <textarea
+                    className="field-input field-textarea admin-action-note"
+                    name="note"
+                    onChange={updateActionDraft}
+                    placeholder="Optional note for the moderation team."
+                    value={actionDraft.note}
+                  />
+                </label>
+
+                {isSuspendDraft && (
+                  <label className="field-label admin-action-duration">
+                    Suspension length
+                    <select
+                      className="field-input"
+                      name="durationDays"
+                      onChange={updateActionDraft}
+                      value={actionDraft.durationDays}
+                    >
+                      <option value="1">1 day</option>
+                      <option value="7">7 days</option>
+                      <option value="30">30 days</option>
+                    </select>
+                  </label>
+                )}
+              </div>
+
+              <div className="form-actions">
+                <button className="btn-view-all" onClick={cancelActionDraft} type="button">
+                  Cancel
+                </button>
+                <button className="admin-action-submit" disabled={busyId === actionDraft.id} type="submit">
+                  {busyId === actionDraft.id ? 'Saving...' : `${actionLabel} User`}
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
 
         <section className="section">
           <h2 className="section-title">All Users</h2>
