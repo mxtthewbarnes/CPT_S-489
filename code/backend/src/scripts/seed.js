@@ -202,6 +202,19 @@ async function seedDatabase() {
       imageUrl: '/images/USC-jacket.jpg',
       status: 'active',
     },
+    {
+      sellerId: seller.id,
+      title: 'Oregon State Beavers Jersey',
+      category: 'Jersey',
+      school: 'Oregon State',
+      price: 45.00,
+      size: 'L',
+      condition: 'Good',
+      description: 'Oregon State Beavers football jersey in classic orange and black. Great condition, perfect for game day.',
+      imageUrl: '/images/beav-jersey.jpg',
+      status: 'active',
+    },
+    
   ]);
 
   await CartItem.bulkCreate([
