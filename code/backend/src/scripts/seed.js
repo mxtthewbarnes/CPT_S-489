@@ -125,7 +125,7 @@ async function seedDatabase() {
       size: 'One Size',
       condition: 'Good',
       description: 'Structured snapback with bold maize lettering.',
-      imageUrl: makeImage('Michigan Snapback', '#00274c'),
+      imageUrl: '/images/UM-hat.jpg',
       status: 'active',
     },
     {
@@ -154,6 +154,18 @@ async function seedDatabase() {
       adminReason: 'Counterfeit',
       adminNote: 'Archived after review.',
     },
+    {
+      sellerId: seller.id,
+      title: 'WSU Snapback Hat',
+      category: 'Hat',
+      school: 'WSU',
+      price: 18.00,
+      size: 'One Size',
+      condition: 'Like New',
+      description: 'Classic WSU snapback in crimson and gray. Barely worn, no stains or damage.',
+      imageUrl: makeImage('WSU Hat', '#981e32'),
+      status: 'active',
+    }
   ]);
 
   await CartItem.bulkCreate([

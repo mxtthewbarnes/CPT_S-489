@@ -8,6 +8,7 @@ import './SellerDashboard.css'
 import './Shop.css'
 
 const universities = [
+  //initial hardcoded universities
   'WSU',
   'UW',
   'Oregon',
@@ -17,6 +18,30 @@ const universities = [
   'Michigan',
   'Stanford',
   'Cal',
+  'USC',
+  'Oregon State',
+
+  //BIG 10
+  'Illinois', 'Indiana', 'Iowa', 'Maryland', 'Michigan State',
+  'Minnesota', 'Nebraska', 'Northwestern', 'Ohio State',
+  'Penn State', 'Purdue', 'Rutgers', 'Washington', 'Wisconsin',
+  
+  //SEC
+  'Alabama', 'Arkansas', 'Auburn', 'Florida', 'Georgia', 'Kentucky',
+  'LSU', 'Mississippi State', 'Missouri', 'Oklahoma', 'Ole Miss',
+  'South Carolina', 'Tennessee', 'Texas', 'Texas A&M', 'Vanderbilt',
+
+  //ACC
+  'Boston College', 'Clemson', 'Duke', 'Florida State', 'Georgia Tech',
+  'Louisville', 'Miami', 'NC State', 'North Carolina', 'Pittsburgh',
+  'SMU', 'Syracuse', 'Virginia', 'Virginia Tech', 'Wake Forest',
+
+  //Big 12
+  'Arizona', 'Baylor', 'BYU', 'Cincinnati', 'Colorado', 'Houston',
+  'Iowa State', 'Kansas', 'Kansas State', 'Oklahoma State',
+  'TCU', 'Texas Tech', 'UCF', 'Utah', 'West Virginia',
+
+
 ]
 
 export default function UniversitySelection() {
