@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { useEffect } from 'react'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import LoadingScreen from './components/LoadingScreen'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/useAuth'
@@ -18,6 +19,38 @@ import SellerDashboard from './pages/SellerDashboard'
 import Shop from './pages/Shop'
 import UniversitySelection from './pages/UniversitySelection'
 import UserManagement from './pages/UserManagement'
+
+const APP_NAME = 'Campus Closet'
+const DEFAULT_TITLE = `${APP_NAME} | Reclaimed College Gear`
+
+function titleForPathname(pathname) {
+  if (pathname === '/') return DEFAULT_TITLE
+  if (pathname === '/auth') return `Sign In | ${APP_NAME}`
+  if (pathname === '/dashboard') return `Dashboard | ${APP_NAME}`
+  if (pathname === '/shop') return `Shop | ${APP_NAME}`
+  if (pathname.startsWith('/product/')) return `Listing Details | ${APP_NAME}`
+  if (pathname === '/orders/history') return `Purchase History | ${APP_NAME}`
+  if (pathname.startsWith('/orders/') && pathname.endsWith('/confirmation')) return `Order Confirmation | ${APP_NAME}`
+  if (pathname === '/university') return `Choose University | ${APP_NAME}`
+  if (pathname === '/notifications') return `Notifications | ${APP_NAME}`
+  if (pathname === '/seller') return `Seller Dashboard | ${APP_NAME}`
+  if (pathname === '/seller/listings/new') return `New Listing | ${APP_NAME}`
+  if (pathname.startsWith('/seller/listings/') && pathname.endsWith('/edit')) return `Edit Listing | ${APP_NAME}`
+  if (pathname === '/admin') return `Admin Dashboard | ${APP_NAME}`
+  if (pathname === '/admin/users') return `User Management | ${APP_NAME}`
+  if (pathname === '/admin/moderation') return `Moderation | ${APP_NAME}`
+  return APP_NAME
+}
+
+function RouteMetadata() {
+  const location = useLocation()
+
+  useEffect(() => {
+    document.title = titleForPathname(location.pathname)
+  }, [location.pathname])
+
+  return null
+}
 
 function DashboardEntry() {
   const { user, loading } = useAuth()
@@ -40,6 +73,7 @@ function DashboardEntry() {
 export default function App() {
   return (
     <BrowserRouter>
+      <RouteMetadata />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
