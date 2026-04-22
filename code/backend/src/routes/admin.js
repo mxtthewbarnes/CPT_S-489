@@ -138,8 +138,10 @@ router.patch('/listings/:id/status', async (req, res, next) => {
       return res.status(400).json({ message: 'Sold listings cannot be moderated.' });
     }
 
-    if (status === 'removed' && !reason) {
-      return res.status(400).json({ message: 'Removing a listing requires a reason.' });
+    if ((status === 'hidden' || status === 'removed') && !reason) {
+      return res
+        .status(400)
+        .json({ message: `${status === 'hidden' ? 'Hiding' : 'Removing'} a listing requires a reason.` });
     }
 
     if (status === 'active' && listing.hiddenByAccountStatus) {
@@ -148,11 +150,13 @@ router.patch('/listings/:id/status', async (req, res, next) => {
         .json({ message: 'This listing is hidden because the seller account is restricted.' });
     }
 
-    const hadAdminModeration = Boolean(listing.adminReason || listing.adminNote || listing.status === 'removed');
+    const hadAdminModeration = Boolean(
+      listing.adminReason || listing.adminNote || listing.status === 'removed' || listing.status === 'hidden',
+    );
 
     listing.status = status;
-    listing.adminReason = status === 'removed' ? reason : null;
-    listing.adminNote = status === 'removed' ? note : null;
+    listing.adminReason = status === 'hidden' || status === 'removed' ? reason : null;
+    listing.adminNote = status === 'hidden' || status === 'removed' ? note : null;
     await listing.save();
 
     if (status === 'removed') {
@@ -170,7 +174,7 @@ router.patch('/listings/:id/status', async (req, res, next) => {
         userId: listing.sellerId,
         type: 'listing',
         title: 'Listing hidden by admin',
-        message: `Your listing "${listing.title}" was hidden from the marketplace.`,
+        message: `Your listing "${listing.title}" was hidden. Reason: ${reason}.`,
         link: '/seller',
       });
     }
