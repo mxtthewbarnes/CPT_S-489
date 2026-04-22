@@ -32,6 +32,12 @@
     #161616;
 }
 
+.admin-action-panel-restored {
+  background:
+    radial-gradient(circle at top right, rgba(76, 175, 80, 0.1), transparent 32%),
+    #161616;
+}
+
 .admin-action-header {
   align-items: flex-start;
   margin-bottom: 1.25rem;
@@ -53,6 +59,44 @@
   max-width: 220px;
 }
 
+.admin-restore-summary {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-restore-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.admin-restore-detail {
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #244927;
+  background: rgba(16, 24, 16, 0.9);
+}
+
+.admin-restore-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #9ac99e;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-restore-copy {
+  margin: 0;
+  color: #f5f7f5;
+  line-height: 1.55;
+}
+
+.admin-restore-footnote {
+  margin: 0;
+}
+
 .admin-action-submit {
   border: 1px solid #6e3030;
   background: #a54242;
@@ -70,6 +114,11 @@
   background: #a76a17;
 }
 
+.admin-action-panel-restored .admin-action-submit {
+  border-color: #356f3b;
+  background: #458e4d;
+}
+
 .admin-action-submit:hover:not(:disabled) {
   background: #bc4f4f;
   border-color: #8c3e3e;
@@ -79,6 +128,11 @@
 .admin-action-panel-suspended .admin-action-submit:hover:not(:disabled) {
   background: #c67a1a;
   border-color: #9a6d26;
+}
+
+.admin-action-panel-restored .admin-action-submit:hover:not(:disabled) {
+  background: #53a75b;
+  border-color: #3e8044;
 }
 
 .admin-action-submit:disabled {

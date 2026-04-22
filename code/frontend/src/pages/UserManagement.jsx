@@ -68,7 +68,7 @@ export default function UserManagement() {
       .includes(normalizedQuery)
   })
 
-  async function suspendUser(user) {
+  function suspendUser(user) {
     setError('')
     setActionDraft({
       id: user.id,
@@ -80,7 +80,7 @@ export default function UserManagement() {
     })
   }
 
-  async function banUser(user) {
+  function banUser(user) {
     setError('')
     setActionDraft({
       id: user.id,
@@ -92,9 +92,20 @@ export default function UserManagement() {
     })
   }
 
-  async function restoreUser(user) {
-    const note = window.prompt(`Optional note for restoring ${user.email}:`, '') || ''
-    await changeStatus(user.id, { status: 'active', note })
+  function restoreUser(user) {
+    setError('')
+    setActionDraft({
+      id: user.id,
+      email: user.email,
+      status: 'active',
+      reason: '',
+      note: '',
+      durationDays: '7',
+      previousStatus: user.status,
+      previousReason: user.statusReason || '',
+      previousNote: user.statusNote || '',
+      suspensionEndsAt: user.suspensionEndsAt || '',
+    })
   }
 
   function updateActionDraft(event) {
@@ -114,28 +125,34 @@ export default function UserManagement() {
   async function submitAction(event) {
     event.preventDefault()
 
-    const reason = actionDraft?.reason.trim() || ''
-
-    if (!reason || !actionDraft) {
-      setError(`${actionDraft?.status === 'suspended' ? 'Suspension' : 'Ban'} reason is required.`)
+    if (!actionDraft) {
       return
     }
 
-    const payload = {
-      status: actionDraft.status,
-      reason,
-      note: actionDraft.note.trim(),
-    }
+    const isRestoreDraft = actionDraft.status === 'active'
+    const payload = { status: actionDraft.status }
 
-    if (actionDraft.status === 'suspended') {
-      const durationDays = Number(actionDraft.durationDays)
+    if (!isRestoreDraft) {
+      const reason = actionDraft.reason.trim()
 
-      if (![1, 7, 30].includes(durationDays)) {
-        setError('Suspensions must be 1, 7, or 30 days.')
+      if (!reason) {
+        setError(`${actionDraft.status === 'suspended' ? 'Suspension' : 'Ban'} reason is required.`)
         return
       }
 
-      payload.durationDays = durationDays
+      payload.reason = reason
+      payload.note = actionDraft.note.trim()
+
+      if (actionDraft.status === 'suspended') {
+        const durationDays = Number(actionDraft.durationDays)
+
+        if (![1, 7, 30].includes(durationDays)) {
+          setError('Suspensions must be 1, 7, or 30 days.')
+          return
+        }
+
+        payload.durationDays = durationDays
+      }
     }
 
     const updatedUser = await changeStatus(actionDraft.id, payload)
@@ -145,11 +162,14 @@ export default function UserManagement() {
     }
   }
 
+  const isRestoreDraft = actionDraft?.status === 'active'
   const isSuspendDraft = actionDraft?.status === 'suspended'
-  const actionLabel = isSuspendDraft ? 'Suspend' : 'Ban'
-  const actionDescription = isSuspendDraft
-    ? 'Add the required reason shown to the user, choose the suspension length, and include any optional internal note.'
-    : 'Add the required reason shown to the user, plus an optional internal note for admin records.'
+  const actionLabel = isRestoreDraft ? 'Restore' : isSuspendDraft ? 'Suspend' : 'Ban'
+  const actionDescription = isRestoreDraft
+    ? 'Review the current restriction details, then restore account access and any listings hidden because of the account restriction.'
+    : isSuspendDraft
+      ? 'Add the required reason shown to the user, choose the suspension length, and include any optional internal note.'
+      : 'Add the required reason shown to the user, plus an optional internal note for admin records.'
 
   return (
     <div className="admin-page">
@@ -179,7 +199,11 @@ export default function UserManagement() {
         {actionDraft && (
           <section
             className={`panel form-card admin-action-panel ${
-              isSuspendDraft ? 'admin-action-panel-suspended' : 'admin-action-panel-banned'
+              isRestoreDraft
+                ? 'admin-action-panel-restored'
+                : isSuspendDraft
+                  ? 'admin-action-panel-suspended'
+                  : 'admin-action-panel-banned'
             }`}
           >
             <div className="page-header admin-action-header">
@@ -197,50 +221,84 @@ export default function UserManagement() {
             </div>
 
             <form onSubmit={submitAction}>
-              <div className="form-grid admin-action-grid">
-                <label className="field-label">
-                  Reason for {isSuspendDraft ? 'suspension' : 'ban'}
-                  <textarea
-                    className="field-input field-textarea admin-action-reason"
-                    name="reason"
-                    onChange={updateActionDraft}
-                    placeholder={
-                      isSuspendDraft
-                        ? 'Explain why this account is being suspended.'
-                        : 'Explain why this account is being banned.'
-                    }
-                    required
-                    value={actionDraft.reason}
-                  />
-                </label>
+              {isRestoreDraft ? (
+                <div className="admin-restore-summary">
+                  <div className="admin-restore-grid">
+                    <article className="admin-restore-detail">
+                      <span className="admin-restore-label">Current status</span>
+                      <span className={`status-badge badge-${actionDraft.previousStatus}`}>
+                        {actionDraft.previousStatus}
+                      </span>
+                    </article>
 
-                <label className="field-label">
-                  Admin note
-                  <textarea
-                    className="field-input field-textarea admin-action-note"
-                    name="note"
-                    onChange={updateActionDraft}
-                    placeholder="Optional note for the moderation team."
-                    value={actionDraft.note}
-                  />
-                </label>
+                    <article className="admin-restore-detail">
+                      <span className="admin-restore-label">Reason on file</span>
+                      <p className="admin-restore-copy">{actionDraft.previousReason || 'No reason recorded.'}</p>
+                    </article>
 
-                {isSuspendDraft && (
-                  <label className="field-label admin-action-duration">
-                    Suspension length
-                    <select
-                      className="field-input"
-                      name="durationDays"
+                    <article className="admin-restore-detail">
+                      <span className="admin-restore-label">Admin note</span>
+                      <p className="admin-restore-copy">{actionDraft.previousNote || 'No internal note recorded.'}</p>
+                    </article>
+
+                    {actionDraft.suspensionEndsAt && (
+                      <article className="admin-restore-detail">
+                        <span className="admin-restore-label">Suspension ends</span>
+                        <p className="admin-restore-copy">{formatDate(actionDraft.suspensionEndsAt)}</p>
+                      </article>
+                    )}
+                  </div>
+
+                  <p className="muted-copy admin-restore-footnote">
+                    Restoring this account clears the restriction and makes any account-hidden listings active again.
+                  </p>
+                </div>
+              ) : (
+                <div className="form-grid admin-action-grid">
+                  <label className="field-label">
+                    Reason for {isSuspendDraft ? 'suspension' : 'ban'}
+                    <textarea
+                      className="field-input field-textarea admin-action-reason"
+                      name="reason"
                       onChange={updateActionDraft}
-                      value={actionDraft.durationDays}
-                    >
-                      <option value="1">1 day</option>
-                      <option value="7">7 days</option>
-                      <option value="30">30 days</option>
-                    </select>
+                      placeholder={
+                        isSuspendDraft
+                          ? 'Explain why this account is being suspended.'
+                          : 'Explain why this account is being banned.'
+                      }
+                      required
+                      value={actionDraft.reason}
+                    />
                   </label>
-                )}
-              </div>
+
+                  <label className="field-label">
+                    Admin note
+                    <textarea
+                      className="field-input field-textarea admin-action-note"
+                      name="note"
+                      onChange={updateActionDraft}
+                      placeholder="Optional note for the moderation team."
+                      value={actionDraft.note}
+                    />
+                  </label>
+
+                  {isSuspendDraft && (
+                    <label className="field-label admin-action-duration">
+                      Suspension length
+                      <select
+                        className="field-input"
+                        name="durationDays"
+                        onChange={updateActionDraft}
+                        value={actionDraft.durationDays}
+                      >
+                        <option value="1">1 day</option>
+                        <option value="7">7 days</option>
+                        <option value="30">30 days</option>
+                      </select>
+                    </label>
+                  )}
+                </div>
+              )}
 
               <div className="form-actions">
                 <button className="btn-view-all" onClick={cancelActionDraft} type="button">
